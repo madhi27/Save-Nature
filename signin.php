@@ -1,44 +1,66 @@
 <?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['signin'])) {
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
 
-if (isset($_POST['signin'])) {
-        $email = trim($_POST['email']);
-        $password = trim($_POST['password']);
-        
-        if (!empty($email) && !empty($password)) {
-            $host = "localhost"; // Replace with your database host
-            $dbname = "Save"; // Replace with your database name
-            $dbusername = "root"; // Replace with your database user
-            $dbpassword = ""; // Replace with your database password
+    if (!empty($email) && !empty($password)) {
+        $host = "localhost";
+        $dbname = "save";
+        $dbusername = "root";
+        $dbpassword = "";
 
-            $conn = new mysqli($host, $dbusername, $dbpassword, $dbname);
+        // Create a new database connection
+        $conn = new mysqli($host, $dbusername, $dbpassword, $dbname);
 
-            if ($conn->connect_error) {
-                die('Connection Error (' . $conn->connect_errno . ') ' . $conn->connect_error);
-            } else {
-                $SELECT = "SELECT id, name, password FROM signin WHERE email = ?";
-            }
+        // Check for connection errors
+        if ($conn->connect_error) {
+            die('Connection Error (' . $conn->connect_errno . ') ' . $conn->connect_error);
+        }
 
-            $stmt = $conn->prepare($SELECT);
-            $stmt->bind_param("s", $email);
-            $stmt->execute();
-            $stmt->store_result();
-            $stmt->bind_result($id, $name, $hashed_password);
+        // Prepare and execute a query to check if the email exists and retrieve the password hash
+        $SELECT = "SELECT password FROM signup WHERE email = ?";
+        $stmt = $conn->prepare($SELECT);
+
+        if (!$stmt) {
+            die('Prepare failed: ' . $conn->error);
+        }
+
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows === 1) {
+            $stmt->bind_result($hashed_password);
             $stmt->fetch();
 
-            if ($stmt->num_rows > 0 && password_verify($password, $hashed_password)) {
-                // Start a new session and save user data
+            // Verify the provided password against the hashed password
+            if (password_verify($password, $hashed_password)) {
+                // Start a session and redirect to the home page or dashboard
                 session_start();
-                $_SESSION['user_id'] = $id;
-                $_SESSION['user_name'] = $name;
-                echo "Signin Successfully";
-                // Redirect to the dashboard or another page
-                // header('Location: dashboard.php');
+                $_SESSION['email'] = $email;
+                header("Location: index.html");
+                exit();
             } else {
-                echo "Invalid email or password";
+                // Invalid password
+                echo "<div class='container center-message'>
+                        <h1>Invalid email or password</h1>
+                      </div>";
             }
-
-            $stmt->close();
-            $conn->close();
+        } else {
+            // Email not found
+            echo "<div class='container center-message'>
+                    <h1>Email not registered</h1>
+                  </div>";
         }
+
+        // Close the statement and connection
+        $stmt->close();
+        $conn->close();
+    } else {
+        // Empty fields
+        echo "<div class='container center-message'>
+                <h1>All fields are required</h1>
+              </div>";
     }
+}
 ?>

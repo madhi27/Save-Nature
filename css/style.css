@@ -144,17 +144,57 @@ header .fa-bars{
     display: none;
 }
 
-.home{
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: url(../images/wallpaper.png) no-repeat;
-    background-size: cover;
-    background-position: center;
-
-
+/* Ensure the section covers the full viewport */
+.home {
+    position: relative; /* Required for absolute positioning of children */
+    width: 100%;
+    height: 100vh; /* Full viewport height */
+    overflow: hidden; /* Hide overflow to keep things tidy */
 }
+
+/* Style for the video */
+.background-video {
+    position: absolute; /* Position the video absolutely */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Cover the section without distorting */
+    z-index: -1; /* Ensure the video is behind other elements */
+}
+
+/* Style for heading and button */
+.home h1, .home .btn {
+    position: absolute;
+    color: white; /* Contrast with video for readability */
+    text-align: center;
+    width: 100%;
+    top: 50%;
+    transform: translateY(-50%); /* Center vertically */
+    z-index: 1; /* Ensure it appears in front of the video */
+}
+
+.home h1 {
+    font-size: 3em;
+    margin: 0;
+}
+
+.home .btn {
+    margin-top: 20px; /* Space between heading and button */
+    padding: 10px 20px;
+    font-size: 1.2em;
+    background-color: #007BFF; /* Button background color */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none; /* Remove underline from anchor */
+}
+
+.home .btn:hover {
+    background-color: #0056b3; /* Darker background on hover */
+}
+
 
 .home .content{
     text-align: center;
@@ -665,4 +705,9 @@ header .fa-bars{
     .donate .form-container form{
         width: 90%;
     }
+}
+.background-video {
+    width: 100%;
+    height: auto;
+    display: block;
 }

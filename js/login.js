@@ -1,14 +1,19 @@
-document.addEventListener("DOMContentLoaded", function() {
-    var formSwitches = document.querySelectorAll(".form-switch");
-    formSwitches.forEach(function(formSwitch) {
-        formSwitch.addEventListener("click", function() {
-            var targetCard = document.querySelector(this.getAttribute("data-target"));
-            var allCards = document.querySelectorAll(".card");
-            allCards.forEach(function(card) {
-                card.style.display = "none";
-            });
+document.addEventListener('DOMContentLoaded', function () {
+    const switches = document.querySelectorAll('.form-switch');
+
+    switches.forEach(function (switchElement) {
+        switchElement.addEventListener('click', function () {
+            const targetId = this.getAttribute('data-target');
+            const targetCard = document.querySelector(targetId);
+
             if (targetCard) {
-                targetCard.style.display = "block";
+                // Hide all cards
+                document.querySelectorAll('.card').forEach(card => {
+                    card.style.display = 'none';
+                });
+
+                // Show the target card
+                targetCard.style.display = 'block';
             }
         });
     });
